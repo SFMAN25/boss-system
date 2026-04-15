@@ -1,55 +1,194 @@
-<form id="registerForm">
-    <input type="text" id="Name" placeholder="الاسم الكامل" required>
-    <input type="tel" id="Phone" placeholder="رقم الهاتف (للدخول)" required>
-    <input type="password" id="Password" placeholder="أنشئ كلمة سر قوية" required>
-    
-    <div style="display: flex; gap: 10px;">
-        <input type="number" id="Age" placeholder="السن" required style="flex:1">
-        <select id="PaymentMethod" required style="flex:2">
-            <option value="">وسيلة الراتب</option>
-            <option value="فودافون كاش">فودافون كاش</option>
-            <option value="أورنج كاش">أورنج كاش</option>
-            <option value="اتصالات كاش">اتصالات كاش</option>
-        </select>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOSS SYSTEM | تسجيل جديد</title>
+    <style>
+        :root {
+            --gold: #fbbf24;
+            --blue: #38bdf8;
+            --glass: rgba(15, 23, 42, 0.7);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('https://files.catbox.moe/n4mjhu.png') center/cover no-repeat fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        /* حاوية التسجيل في المنتصف */
+        .register-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* تصميم البطاقة الفخمة (Glassmorphism) */
+        .register-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--gold), var(--blue));
+        }
+
+        .logo {
+            color: var(--gold);
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 22px;
+            color: white;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: var(--blue);
+            margin-right: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--gold), #d97706);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .choose-pic {
+            color: var(--blue);
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            margin: 15px 0;
+        }
+
+        .footer-link {
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .footer-link a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <div class="register-card">
+            <div class="logo">BOSS SYSTEM</div>
+            <h2>انضم لفريق العمل</h2>
+            
+            <form>
+                <div class="input-group">
+                    <input type="text" placeholder="الاسم الكامل" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="tel" placeholder="رقم الهاتف" required>
+                </div>
+
+                <div class="input-group">
+                    <label>أنشئ كلمة سر قوية</label>
+                    <input type="password" placeholder="كلمة السر الخاصة بك" required>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;">
+                        <input type="number" placeholder="السن" required>
+                    </div>
+                    <div class="input-group" style="flex: 2;">
+                        <input type="text" placeholder="رقم المحفظة (اختياري)">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <select id="payment" required>
+                        <option value="">اختر طريقة استلام الراتب</option>
+                        <option value="vodafone">فودافون كاش</option>
+                        <option value="etisalat">اتصالات كاش</option>
+                        <option value="orange">أورنج كاش</option>
+                        <option value="we">وي كاش</option>
+                    </select>
+                </div>
+
+                <a href="#" class="choose-pic">إختيار صورة (إختياري) 📸</a>
+
+                <button type="submit">أنشئ حسابي بنجاح</button>
+            </form>
+
+            <div class="footer-link">
+                لديك حساب بالفعل؟ <a href="login.html">سجل دخولك</a>
+            </div>
+        </div>
     </div>
-    <input type="text" id="Wallet" placeholder="رقم المحفظة" required>
-    
-    <div class="file-upload" onclick="document.getElementById('imageInput').click()">
-        <p id="uploadText">📸 اختيار صورة (اختياري)</p>
-        <input type="file" id="imageInput" accept="image/*" style="display:none">
-    </div>
-    <div id="statusMsg" style="font-size:12px; margin-bottom:10px;"></div>
 
-    <button type="submit" id="submitBtn">إنشاء الحساب</button>
-</form>
-
-<script>
-    // ... (كود رفع الصورة السابق) ...
-    document.getElementById('registerForm').onsubmit = function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "جاري الحفظ...";
-        
-        const data = {
-            Name: document.getElementById('Name').value,
-            Age: document.getElementById('Age').value,
-            Phone: document.getElementById('Phone').value,
-            Password: document.getElementById('Password').value,
-            PaymentMethod: document.getElementById('PaymentMethod').value,
-            Wallet: document.getElementById('Wallet').value,
-            PicUrl: uploadedImageUrl || "https://files.catbox.moe/lhgbrl.png",
-            Salary: "0",
-            Rating: "0",
-            Status: "Pending" // الحالة الافتراضية
-        };
-
-        fetch('https://sheetdb.io/api/v1/uvhb8vxlpe7ve', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({data: [data]})
-        }).then(() => {
-            alert('مبروك يا بطل! تم إنشاء الحساب. الرجاء التواصل مع الـ CEO لتفعيل حسابك.');
-            window.location.href = "https://wa.me/201285577074?text=أهلاً يا BOSS، لقد قمت بالتسجيل وأريد تفعيل حسابي. اسمي: " + data.Name;
-        });
-    };
-</script>
+</body>
+</html>
