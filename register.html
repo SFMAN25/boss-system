@@ -2,31 +2,117 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>إنشاء حساب | BOSS</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>انضم لفريق BOSS | تسجيل جديد</title>
+    <style>
+        :root { --gold: #fbbf24; --blue: #38bdf8; --glass: rgba(30, 41, 59, 0.7); }
+        body { margin: 0; background: url('https://files.catbox.moe/x4wlsm.png') center/cover no-repeat fixed; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; }
+        .register-card { background: var(--glass); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 450px; text-align: center; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(15,23,42,0.8); border: 1px solid #334155; border-radius: 10px; color: white; box-sizing: border-box; text-align: right; }
+        .file-upload { background: rgba(251, 191, 36, 0.1); border: 2px dashed var(--gold); padding: 15px; border-radius: 10px; margin: 10px 0; cursor: pointer; position: relative; }
+        .file-upload input { position: absolute; opacity: 0; width: 100%; height: 100%; top: 0; left: 0; cursor: pointer; }
+        .file-upload p { margin: 0; font-size: 13px; color: var(--gold); }
+        button { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--gold), #d97706); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .status-msg { font-size: 12px; margin-top: 5px; display: none; }
+    </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>انضم لفريقنا</h2>
+
+    <div class="register-card">
+        <h2 style="color: var(--gold);">انضم لفريق BOSS</h2>
+        <p style="font-size: 14px; color: #94a3b8;">سجل بياناتك (الصورة اختيارية)</p>
+        
         <form id="registerForm">
-            <input type="text" id="regName" placeholder="الاسم الكامل" required>
-            <input type="number" id="regAge" placeholder="السن" required>
-            <input type="tel" id="regPhone" placeholder="رقم الهاتف" required>
-            
-            <select id="paymentMethod" required>
-                <option value="">اختر طريقة استلام الراتب</option>
-                <option value="Vodafone">فودافون كاش</option>
-                <option value="Orange">أورنج كاش</option>
-                <option value="Etisalat">اتصالات كاش</option>
-                <option value="We">وي كاش</option>
+            <input type="text" id="Name" placeholder="الاسم الكامل" required>
+            <div style="display: flex; gap: 10px;">
+                <input type="number" id="Age" placeholder="السن" required style="flex:1">
+                <input type="tel" id="Phone" placeholder="رقم الواتساب" required style="flex:2">
+            </div>
+
+            <select id="PaymentMethod" required>
+                <option value="">اختر محفظة استلام الراتب</option>
+                <option value="فودافون كاش">فودافون كاش</option>
+                <option value="أورنج كاش">أورنج كاش</option>
+                <option value="اتصالات كاش">اتصالات كاش</option>
+                <option value="وي كاش">وي كاش</option>
             </select>
             
-            <input type="text" id="walletNumber" placeholder="رقم المحفظة" required>
-            <input type="url" id="picUrl" placeholder="رابط صورتك من catbox.moe">
-            
-            <button type="submit">إنشاء الحساب بنجاح</button>
+            <input type="text" id="Wallet" placeholder="رقم المحفظة" required>
+
+            <div class="file-upload" id="uploadArea">
+                <p id="uploadText">📸 اضغط هنا لاختيار صورة (اختياري)</p>
+                <input type="file" id="imageInput" accept="image/*">
+            </div>
+            <div id="status" class="status-msg"></div>
+
+            <button type="submit" id="submitBtn">إنشاء الحساب بنجاح</button>
         </form>
-        <p>عندك حساب؟ <a href="login.html">سجل دخول هنا</a></p>
     </div>
+
+    <script>
+        let uploadedImageUrl = "https://files.catbox.moe/lhgbrl.png"; // صورة افتراضية
+
+        // لما المستخدم يختار صورة
+        document.getElementById('imageInput').onchange = function(e) {
+            const status = document.getElementById('status');
+            const uploadText = document.getElementById('uploadText');
+            status.style.display = 'block';
+            status.innerText = "جاري تجهيز الصورة...";
+            status.style.color = "#38bdf8";
+
+            const file = e.target.files[0];
+            const formData = new FormData();
+            formData.append('reqtype', 'fileupload');
+            formData.append('fileToUpload', file);
+
+            // رفع الصورة لـ Catbox (عن طريق كوبري عشان الـ CORS)
+            fetch('https://corsproxy.io/?' + encodeURIComponent('https://catbox.moe/user/api.php'), {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.text())
+            .then(url => {
+                if(url.includes('https')) {
+                    uploadedImageUrl = url;
+                    status.innerText = "✅ تم تجهيز الصورة بنجاح!";
+                    status.style.color = "#4ade80";
+                    uploadText.innerText = "تم اختيار صورة";
+                }
+            })
+            .catch(() => {
+                status.innerText = "❌ فشل رفع الصورة، سيتم استخدام صورة افتراضية.";
+                status.style.color = "#f87171";
+            });
+        };
+
+        // عند إرسال الفورم بالكامل
+        document.getElementById('registerForm').onsubmit = function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "جاري الحفظ...";
+            btn.disabled = true;
+
+            const finalData = {
+                Name: document.getElementById('Name').value,
+                Age: document.getElementById('Age').value,
+                Phone: document.getElementById('Phone').value,
+                PaymentMethod: document.getElementById('PaymentMethod').value,
+                Wallet: document.getElementById('Wallet').value,
+                PicUrl: uploadedImageUrl,
+                Salary: "0",
+                Rating: "0"
+            };
+
+            fetch('https://sheetdb.io/api/v1/uvhb8vxlpe7ve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: [finalData] })
+            })
+            .then(() => {
+                alert('مبروك يا بطل! تم التسجيل بنجاح.');
+                window.location.href = 'login.html';
+            });
+        };
+    </script>
 </body>
 </html>
