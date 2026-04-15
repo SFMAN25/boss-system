@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إنشاء حساب | BOSS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>انضم لفريقنا</h2>
+        <form id="registerForm">
+            <input type="text" id="regName" placeholder="الاسم الكامل" required>
+            <input type="number" id="regAge" placeholder="السن" required>
+            <input type="tel" id="regPhone" placeholder="رقم الهاتف" required>
+            
+            <select id="paymentMethod" required>
+                <option value="">اختر طريقة استلام الراتب</option>
+                <option value="Vodafone">فودافون كاش</option>
+                <option value="Orange">أورنج كاش</option>
+                <option value="Etisalat">اتصالات كاش</option>
+                <option value="We">وي كاش</option>
+            </select>
+            
+            <input type="text" id="walletNumber" placeholder="رقم المحفظة" required>
+            <input type="url" id="picUrl" placeholder="رابط صورتك من catbox.moe">
+            
+            <button type="submit">إنشاء الحساب بنجاح</button>
+        </form>
+        <p>عندك حساب؟ <a href="login.html">سجل دخول هنا</a></p>
+    </div>
+</body>
+</html>
