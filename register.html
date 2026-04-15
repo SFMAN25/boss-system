@@ -1,76 +1,30 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>انضم لفريق BOSS</title>
-    <style>
-        :root { --gold: #fbbf24; --blue: #38bdf8; --glass: rgba(15, 23, 42, 0.85); }
-        body { margin: 0; background: url('https://files.catbox.moe/n4mjhu.png') center/cover no-repeat fixed; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; }
-        .reg-card { background: var(--glass); backdrop-filter: blur(15px); padding: 30px; border-radius: 25px; border: 1px solid rgba(251, 191, 36, 0.3); width: 90%; max-width: 450px; text-align: center; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(15, 23, 42, 0.7); border: 1px solid #334155; border-radius: 12px; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--gold), #d97706); border: none; border-radius: 12px; color: #000; font-weight: bold; cursor: pointer; margin-top: 15px; }
-    </style>
-</head>
-<body>
-    <div class="reg-card">
-        <h2 style="color: var(--gold);">انضم لفريق BOSS</h2>
-        <input type="text" id="regName" placeholder="الاسم بالكامل">
-        <input type="tel" id="regPhone" placeholder="رقم الهاتف">
-        <input type="password" id="regPass" placeholder="أنشئ كلمة سر قوية">
-        <input type="text" id="regArea" placeholder="المنطقة (مثلاً: السيوف، مينا البصل)">
-        <select id="walletType">
-            <option value="">اختر وسيلة استلام الأرباح</option>
-            <option value="Vodafone Cash">فودافون كاش</option>
-            <option value="InstaPay">انستا باي</option>
-        </select>
-        <input type="text" id="walletNum" placeholder="رقم المحفظة / عنوان الحساب">
+async function registerUser() {
+    const btn = document.getElementById('regBtn');
+    const userData = {
+        Name: document.getElementById('regName').value,
+        Phone: document.getElementById('regPhone').value,
+        Password: document.getElementById('regPass').value,
+        Work_Area: document.getElementById('regArea').value,
+        Wallet_Type: document.getElementById('walletType').value,
+        Wallet_Number: document.getElementById('walletNum').value
+    };
+
+    btn.innerText = "جاري الحفظ...";
+    btn.disabled = true;
+
+    try {
+        await fetch('https://script.google.com/macros/s/AKfycbxvjLxtBIJFfAewgvafvRi9xfNEpoK3Jor_F7ffNtr_SZ4rlfH4vnwhHI3Pn2Lk4uTi/exec', {
+            method: 'POST',
+            mode: 'no-cors', // مهمة جداً عشان تتخطى قيود الـ CORS
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(userData)
+        });
         
-        <button onclick="registerUser()" id="regBtn">إنشاء حساب بنجاح</button>
-        <p style="font-size: 13px;">عندك حساب فعلاً؟ <a href="login.html" style="color: var(--blue);">سجل دخول</a></p>
-    </div>
-
-    <script>
-        function registerUser() {
-            const btn = document.getElementById('regBtn');
-            const userData = {
-                Name: document.getElementById('regName').value,
-                Phone: document.getElementById('regPhone').value,
-                Password: document.getElementById('regPass').value,
-                Work_Area: document.getElementById('regArea').value,
-                Wallet_Type: document.getElementById('walletType').value,
-                Wallet_Number: document.getElementById('walletNum').value,
-                Status: "Pending", // بيسجل ويفضل مستني موافقتك
-                Date: new Date().toLocaleString('ar-EG')
-            };
-
-            if(!userData.Name || !userData.Phone || !userData.Password) {
-                alert("برجاء إكمال البيانات الأساسية!"); return;
-            }
-
-            btn.innerText = "جاري الحفظ...";
-            btn.disabled = true;
-
-            // استبدل اللينك ده بـ API الشيت التاني لو مختلف
-            fetch('https://sheetdb.io/api/v1/uvhb8vxlpe7ve', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ data: [userData] })
-            })
-            .then(res => {
-                if(res.ok) {
-                    alert("✅ تم التسجيل بنجاح! حسابك تحت المراجعة.");
-                    window.location.href = 'login.html';
-                } else {
-                    throw new Error();
-                }
-            })
-            .catch(() => {
-                alert("❌ مشكلة في السيرفر! تأكد من إعدادات SheetDB");
-                btn.innerText = "إنشاء حساب بنجاح";
-                btn.disabled = false;
-            });
-        }
-    </script>
-</body>
-</html>
+        alert("✅ تم التسجيل بنجاح! سيتم مراجعة بياناتك.");
+        window.location.href = 'login.html';
+    } catch(e) {
+        alert("❌ حدث خطأ، تأكد من اتصالك بالإنترنت");
+        btn.innerText = "إنشاء حساب بنجاح";
+        btn.disabled = false;
+    }
+}
