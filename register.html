@@ -60,12 +60,12 @@
 
             try {
                 // رابط جوجل سكربت الخاص بك
-                await fetch('https://script.google.com/macros/s/AKfycbxvjLxtBIJFfAewgvafvRi9xfNEpoK3Jor_F7ffNtr_SZ4rlfH4vnwhHI3Pn2Lk4uTi/exec', {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(userData)
-                });
+                await fetch('https://script.google.com/macros/s/AKfycbwIyxtO1oy9IblAWqppLTgYmDz72RtsclYJmmE-bh98br-YRKWcn9XTQBflxf-_UO4T/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(userData)
+});
                 
                 alert("✅ تم التسجيل بنجاح! سيتم مراجعة بياناتك من قبل الإدارة.");
                 window.location.href = 'login.html';
