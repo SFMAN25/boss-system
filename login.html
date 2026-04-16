@@ -38,38 +38,47 @@
     </div>
 
     <script>
-        async function userLogin() {
+     async function userLogin() {
     const phone = document.getElementById('uPhone').value;
     const pass = document.getElementById('uPass').value;
     const btn = document.getElementById('logBtn');
+
+    if(!phone || !pass) { alert("يا بطل، كمل بياناتك الأول!"); return; }
 
     btn.innerText = "جاري التحقق أوتوماتيكياً...";
     btn.disabled = true;
 
     try {
-        // الرابط الجديد بتاعك
+        // الرابط الجديد بتاعك (جوجل سكريبت)
         const response = await fetch('https://script.google.com/macros/s/AKfycbwIyxtO1oy9IblAWqppLTgYmDz72RtsclYJmmE-bh98br-YRKWcn9XTQBflxf-_UO4T/exec');
         const allUsers = await response.json();
         
-        // البحث عن المستخدم في البيانات اللي جاية من جوجل شيت
+        // بيدور على الموظف برقم تليفونه والباسورد
         const user = allUsers.find(u => u.Phone == phone && u.Password == pass);
 
         if(user) {
             if(user.Status === "Active") {
                 localStorage.setItem('boss_user', JSON.stringify(user));
-                window.location.href = 'user-dash.html';
+                window.location.href = 'user-dash.html'; // هيدخلك اللوحة
             } else {
-                alert("⚠️ حسابك لسه قيد المراجعة.. كلم المدير!");
+                alert("⚠️ حسابك لسه قيد المراجعة.. غير الحالة لـ Active في الشيت!");
+                resetBtn();
             }
         } else {
             alert("❌ الرقم أو كلمة السر غلط!");
+            resetBtn();
         }
     } catch(e) {
-        alert("في مشكلة في الاتصال، تأكد من إعدادات الـ Web App");
+        alert("حدث خطأ في الاتصال بالسيرفر الجديد");
+        resetBtn();
     }
+}
+
+function resetBtn() {
+    const btn = document.getElementById('logBtn');
     btn.innerText = "دخول لوحة التحكم";
     btn.disabled = false;
-}
+
         }
     </script>
 </body>
