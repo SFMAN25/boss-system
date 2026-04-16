@@ -3,65 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | BOSS SYSTEM</title>
+    <title>لوحة المسوق | BOSS SYSTEM</title>
     <style>
-        :root { --gold: #fbbf24; --blue: #38bdf8; --glass: rgba(15, 23, 42, 0.85); }
-        body { margin: 0; background: url('https://files.catbox.moe/n4mjhu.png') center/cover no-repeat fixed; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; }
-        .login-card { background: var(--glass); backdrop-filter: blur(15px); padding: 40px; border-radius: 25px; border: 1px solid rgba(251, 191, 36, 0.3); width: 90%; max-width: 380px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        input { width: 100%; padding: 14px; margin: 12px 0; background: rgba(15, 23, 42, 0.7); border: 1px solid #334155; border-radius: 12px; color: white; outline: none; box-sizing: border-box; }
-        input:focus { border-color: var(--gold); }
-        button { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--gold), #d97706); border: none; border-radius: 12px; color: #000; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; transition: 0.3s; }
-        button:hover { transform: scale(1.02); }
+        :root { --gold: #fbbf24; --blue: #38bdf8; --glass: rgba(15, 23, 42, 0.85); --green: #4ade80; }
+        body { margin: 0; background: url('https://files.catbox.moe/n4mjhu.png') center/cover no-repeat fixed; font-family: 'Segoe UI', Tahoma, sans-serif; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .dash-container { background: var(--glass); backdrop-filter: blur(15px); padding: 30px; border-radius: 25px; border: 1px solid rgba(251, 191, 36, 0.3); width: 100%; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-top: 40px; }
+        .header { text-align: center; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 20px; }
+        .header h2 { color: var(--gold); margin: 0; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-card { background: rgba(30, 41, 59, 0.8); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #334155; }
+        .stat-card h3 { margin: 0; font-size: 14px; color: var(--blue); }
+        .stat-card p { margin: 10px 0 0; font-size: 24px; font-weight: bold; color: white; }
+        .logout-btn { width: 100%; padding: 15px; background: #ef4444; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; margin-top: 25px; font-size: 16px; transition: 0.3s; }
+        .logout-btn:hover { background: #dc2626; }
+        .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-top: 10px; background: rgba(74, 222, 128, 0.2); color: var(--green); border: 1px solid var(--green); }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <h2 style="color: var(--gold);">BOSS SYSTEM</h2>
-        <p style="opacity: 0.8; margin-bottom: 25px;">دخول لوحة تحكم الموظفين</p>
-        
-        <input type="tel" id="userPhone" placeholder="رقم الهاتف المسجل">
-        <input type="password" id="userPass" placeholder="كلمة السر">
-        
-        <button onclick="attemptLogin()" id="logBtn">دخول لوحة التحكم</button>
-        
-        <p style="font-size: 13px; margin-top: 20px;">ليس لديك حساب؟ <a href="register.html" style="color: var(--blue); text-decoration: none;">سجل الآن</a></p>
+
+    <div class="dash-container">
+        <div class="header">
+            <h2>BOSS SYSTEM</h2>
+            <p style="font-size: 20px; margin-top: 10px;">أهلاً بك، <span id="userName" style="color: var(--blue);"></span></p>
+            <div class="badge" id="userStatus">حساب مفعل ✅</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>الراتب / الأرباح</h3>
+                <p><span id="userSalary">0</span> ج.م</p>
+            </div>
+            <div class="stat-card">
+                <h3>تقييم الأداء</h3>
+                <p><span id="userRating">0</span> ⭐</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; background: rgba(30, 41, 59, 0.8); padding: 15px; border-radius: 15px; border: 1px solid #334155;">
+            <p style="margin: 5px 0; font-size: 14px;">📍 منطقة العمل: <strong id="userArea" style="color: var(--gold);"></strong></p>
+            <p style="margin: 5px 0; font-size: 14px;">💳 وسيلة الدفع: <strong id="userWallet" style="color: var(--gold);"></strong></p>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
     </div>
 
     <script>
-        function attemptLogin() {
-            const phone = document.getElementById('userPhone').value;
-            const pass = document.getElementById('userPass').value;
-            const btn = document.getElementById('logBtn');
+        // سحب البيانات من المتصفح اللي اتسجلت وقت الدخول
+        const userData = JSON.parse(localStorage.getItem('boss_user'));
 
-            if(!phone || !pass) { alert('برجاء إدخال البيانات كاملة'); return; }
+        if(!userData) {
+            window.location.href = 'login.html'; // لو مش مسجل يرجعه للدخول
+        } else {
+            document.getElementById('userName').innerText = userData.Name;
+            document.getElementById('userSalary').innerText = userData.Salary || "0";
+            document.getElementById('userRating').innerText = userData.Rating || "0";
+            document.getElementById('userArea').innerText = userData.Work_Area || "غير محدد";
+            document.getElementById('userWallet').innerText = userData.Wallet_Type || "غير محدد";
+        }
 
-            btn.innerText = 'جاري التحقق...';
-            btn.disabled = true;
-
-            // البحث في الشيت عن الرقم والباسورد
-            fetch(`https://sheetdb.io/api/v1/uvhb8vxlpe7ve/search?Phone=${phone}&Password=${pass}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length > 0) {
-                    const user = data[0];
-                    if (user.Status === "Active") {
-                        localStorage.setItem('boss_user', JSON.stringify(user));
-                        window.location.href = 'user-dash.html'; // الدخول لصفحة الموظف وليس الإدارة
-                    } else {
-                        alert('⚠️ حسابك قيد المراجعة. تواصل مع المدير لتفعيله.');
-                        btn.innerText = 'دخول لوحة التحكم';
-                        btn.disabled = false;
-                    }
-                } else {
-                    alert('❌ رقم الهاتف أو كلمة السر غير صحيحة!');
-                    btn.innerText = 'دخول لوحة التحكم';
-                    btn.disabled = false;
-                }
-            })
-            .catch(() => {
-                alert('حدث خطأ في الاتصال بالسيستم');
-                btn.disabled = false;
-            });
+        function logout() {
+            localStorage.removeItem('boss_user');
+            window.location.href = 'login.html';
         }
     </script>
 </body>
