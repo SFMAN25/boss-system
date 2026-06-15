@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الـ BOSS الرئيسية</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <div class="sidebar">
+            <h3>لوحة الـ BOSS</h3>
+            <a href="#" class="active">إدارة المسوقين</a>
+            <a href="#">إدارة الشركات</a>
+            <a href="#" id="logoutBtn" style="color: #ef4444; margin-top: 50px;">خروج آمن</a>
+        </div>
+
+        <div class="main-content">
+            <div class="header-dash">
+                <h2>إدارة المسوقين والنظام العام</h2>
+                <div style="background: #e0f2fe; color: #0369a1; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 13px;">حساب إداري</div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>إجمالي الشركات</h4>
+                    <p id="totalCompanies">--</p>
+                </div>
+                <div class="card">
+                    <h4>إجمالي المسوقين النشطين</h4>
+                    <p id="totalMarketers">--</p>
+                </div>
+            </div>
+
+            <h3>قائمة حسابات المسوقين المسجلين في السيستم</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>كود الشركة المربوط بها</th>
+                        <th>تاريخ التسجيل</th>
+                    </tr>
+                </thead>
+                <tbody id="marketersTableBody">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #94a3b8;">جاري تحميل المسوقين من سيرفر فايربيز...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyYourKeyHere...",
+            authDomain: "trackerpro-d090e.firebaseapp.com",
+            databaseURL: "https://trackerpro-d090e-default-rtdb.firebaseio.com",
+            projectId: "trackerpro-d090e",
+            storageBucket: "trackerpro-d090e.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:12345:web:12345"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // حماية لوحة التحكم وحصرها على الأدمن فقط
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                database.ref('users/' + user.uid).once('value')
+                    .then((snapshot) => {
+                        if(snapshot.exists() && (snapshot.val().role === 'super_admin' || snapshot.val().role === 'company_admin')) {
+                            // الحساب أدمن، ابدأ بجلب البيانات فوراً
+                            loadMarketersData();
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // جلب قائمة المسوقين وعرضها للأدمن برمجياً بالكامل
+        function loadMarketersData() {
+            database.ref('users').once('value')
+                .then((snapshot) => {
+                    const tbody = document.getElementById('marketersTableBody');
+                    tbody.innerHTML = '';
+                    let marketerCount = 0;
+
+                    if(snapshot.exists()) {
+                        snapshot.forEach((childSnapshot) => {
+                            const user = childSnapshot.val();
+                            if(user.role === 'marketer') {
+                                marketerCount++;
+                                const tr = document.createElement('tr');
+                                
+                                const date = user.created_at ? new Date(user.created_at).toLocaleDateString('ar-EG') : '--';
+                                
+                                tr.innerHTML = `
+                                    <td><strong>${user.name}</strong></td>
+                                    <td>${user.email}</td>
+                                    <td><span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">${user.company_id}</span></td>
+                                    <td>${date}</td>
+                                `;
+                                tbody.appendChild(tr);
+                            }
+                        });
+                        document.getElementById('totalMarketers').textContent = marketerCount;
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">لا يوجد مسوقين مسجلين بعد.</td></tr>`;
+                    }
+                }).catch((err) => {
+                    console.error("Error loading data: ", err);
+                });
+                
+            // جلب عدد الشركات التابعة للسيستم
+            database.ref('companies').once('value').then((snap) => {
+                document.getElementById('totalCompanies').textContent = snap.exists() ? snap.numChildren() : 0;
+            });
+        }
+
+        // تسجيل الخروج
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => { window.location.href = 'index.html'; });
+        });
+    </script>
+</body>
+</html>
