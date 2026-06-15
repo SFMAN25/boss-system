@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المسوق - BOSS SYSTEM</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <div class="sidebar">
+            <h3>لوحة المسوق</h3>
+            <a href="#" class="active">الرئيسية</a>
+            <a href="#">التقارير المالية</a>
+            <a href="#" id="logoutBtn" style="color: #ef4444; margin-top: 50px;">تسجيل الخروج</a>
+        </div>
+
+        <div class="main-content">
+            <div class="header-dash">
+                <h2 id="welcomeMsg">أهلاً بك يا بطل...</h2>
+                <div id="userCompany" style="font-weight: bold; color: #475569;">الشركة: --</div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>إجمالي المبيعات</h4>
+                    <p id="totalSales">0</p>
+                </div>
+                <div class="card">
+                    <h4>العمولات المعلقة</h4>
+                    <p id="pendingComm">0 EGP</p>
+                </div>
+                <div class="card">
+                    <h4>العمولات المدفوعة</h4>
+                    <p id="paidComm">0 EGP</p>
+                </div>
+            </div>
+
+            <h3>آخر العمليات المسجلة</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>رقم العملية</th>
+                        <th>المنتج</th>
+                        <th>المبلغ</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody id="actionsLogs">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #94a3b8;">لا توجد عمليات مسجلة حالياً.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyYourKeyHere...",
+            authDomain: "trackerpro-d090e.firebaseapp.com",
+            databaseURL: "https://trackerpro-d090e-default-rtdb.firebaseio.com",
+            projectId: "trackerpro-d090e",
+            storageBucket: "trackerpro-d090e.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:12345:web:12345"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // حماية الصفحة: التأكد من تسجيل الدخول ومن رول الحساب
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                database.ref('users/' + user.uid).once('value')
+                    .then((snapshot) => {
+                        if(snapshot.exists() && snapshot.val().role === 'marketer') {
+                            const data = snapshot.val();
+                            document.getElementById('welcomeMsg').textContent = "أهلاً بك، " + data.name;
+                            document.getElementById('userCompany').textContent = "كود الشركة: " + data.company_id;
+                            
+                            // هنا نقدر نسحب إحصائيات المسوق الحقيقية لو متوفرة في العقدة المالية له
+                        } else {
+                            // لو الحساب أدمن أو غير مصرح له، يتم توجيهه أو تسجيل خروجه لمنع التداخل
+                            window.location.href = 'index.html';
+                        }
+                    });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // زر خروج الأمان
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => { window.location.href = 'index.html'; });
+        });
+    </script>
+</body>
+</html>
