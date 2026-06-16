@@ -1,10 +1,211 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة الـ BOSS الرئيسية - الإدارة العامة</title>
+    
     <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --success-color: #16a34a;
+            --warning-color: #ea580c;
+            --danger-color: #dc2626;
+            --bg-dark: #0f172a;
+            --bg-light: #f8fafc;
+            --text-main: #1e293b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-dark);
+            color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h3 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #38bdf8;
+            font-size: 22px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+        }
+
+        .sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .header-dash {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .header-dash h2 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--bg-dark);
+        }
+
+        .role-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border-right: 5px solid var(--primary-color);
+        }
+
+        .card.companies { border-right-color: #8b5cf6; }
+        .card.marketers { border-right-color: var(--success-color); }
+
+        .card h4 {
+            margin: 0 0 10px 0;
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--bg-dark);
+        }
+
+        .table-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            margin-top: 20px;
+        }
+
+        .table-container h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--bg-dark);
+            font-size: 18px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        .data-table th, .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .company-badge {
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .text-primary { color: var(--primary-color); font-weight: bold; }
+        .text-success { color: var(--success-color); font-weight: bold; }
+
+        .btn-update {
+            background-color: #fef3c7;
+            color: #d97706;
+            border: 1px solid #fde68a;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-update:hover {
+            background-color: #fde68a;
+            color: #b45309;
+        }
+
+        .logout-btn {
+            color: #ef4444 !important;
+            margin-top: auto;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+
+        .logout-btn:hover {
+            background-color: #7f1d1d !important;
+            color: #fff !important;
+        }
+    </style>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -12,51 +213,62 @@
 <body>
 
     <div class="dashboard-wrapper">
+        
         <div class="sidebar">
             <h3>لوحة الـ BOSS</h3>
-            <a href="#" class="active">إدارة المسوقين</a>
-            <a href="#">إدارة الشركات</a>
-            <a href="#" id="logoutBtn" style="color: #ef4444; margin-top: 50px;">خروج آمن</a>
+            <a href="#" class="active">💼 إدارة المسوقين</a>
+            <a href="#">🏢 إدارة الشركات</a>
+            <a href="#">📊 التقارير العامة</a>
+            <a href="#" id="logoutBtn" class="logout-btn">🚪 خروج آمن</a>
         </div>
 
         <div class="main-content">
+            
             <div class="header-dash">
                 <h2>إدارة المسوقين والنظام العام</h2>
-                <div style="background: #e0f2fe; color: #0369a1; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 13px;">حساب إداري بالكامل</div>
+                <div class="role-badge">حساب الإدارة العليا (Super Admin)</div>
             </div>
 
             <div class="card-grid">
-                <div class="card">
+                <div class="card companies">
                     <h4>إجمالي الشركات النشطة</h4>
                     <p id="totalCompanies">0</p>
                 </div>
-                <div class="card">
+                <div class="card marketers">
                     <h4>إجمالي المسوقين المسجلين</h4>
-                    <p id="totalMarketers">0</p>
+                    <p id="totalMarketersCount">0</p>
                 </div>
             </div>
 
-            <h3>قائمة حسابات المسوقين المسجلين حالياً</h3>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>الاسم</th>
-                        <th>البريد الإلكتروني</th>
-                        <th>كود الشركة المربوط بها</th>
-                        <th>تاريخ التسجيل بالسيستم</th>
-                    </tr>
-                </thead>
-                <tbody id="marketersTableBody">
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #94a3b8;">جاري جلب قائمة المسوقين من سيرفر فايربيز...</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <h3>قائمة حسابات المسوقين المسجلين حالياً بالسيستم</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>الاسم الكامل</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>كود الشركة المربوط بها</th>
+                            <th>تاريخ التسجيل</th>
+                            <th>إجمالي المبيعات</th>
+                            <th>الأرباح المدفوعة</th>
+                            <th>إجراءات الإدارة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketersTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #94a3b8; padding: 30px;">
+                                جاري الاتصال الآمن وسحب قائمة المسوقين من سيرفر فايربيز...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // إعدادات مشروع TrackerPro الحقيقية الخاصة بك
+        // 1. إعدادات مشروع فايربيز الحقيقية الخاصة بك (TrackerPro)
         const firebaseConfig = {
             apiKey: "AIzaSyAVW3uSGg86xGKxeXJ5PSwAYAPYET3sZQ8",
             authDomain: "trackerpro-d090e.firebaseapp.com",
@@ -68,72 +280,185 @@
             measurementId: "G-RJ22T0PWGS"
         };
         
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        // تهيئة تطبيق فايربيز الآمن لمنع أي تكرار للاتصال
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // حماية لوحة تحكم الأدمن لضمان عدم وصول المسوقين العاديين لها
+        // 2. فحص صلاحيات الأمان وجدار الحماية عند تحميل الصفحة
         auth.onAuthStateChanged((user) => {
             if (user) {
+                // الفحص والتحقق من رتبة الحساب في قاعدة البيانات الفورية
                 database.ref('users/' + user.uid).once('value')
                     .then((snapshot) => {
-                        if(snapshot.exists() && (snapshot.val().role === 'super_admin' || snapshot.val().role === 'company_admin')) {
-                            // الصلاحيات صحيحة، ابدأ فوراً بسحب البيانات وعرضها
-                            loadMarketersData();
+                        if (snapshot.exists()) {
+                            const role = snapshot.val().role;
+                            // السماح فقط للـ الأدمن بالدخول وطرد المسوقين العاديين لصفحة الـ Login
+                            if (role === 'super_admin' || role === 'company_admin') {
+                                // الصلاحية معتمدة -> ابدأ سحب وإدارة الداتا الحية فوراً
+                                initAdminDashboard();
+                            } else {
+                                alert("⚠️ عذراً، أنت لا تمتلك صلاحيات إدارية للوصول لهذه اللوحة.");
+                                window.location.href = 'index.html';
+                            }
                         } else {
                             window.location.href = 'index.html';
                         }
-                    }).catch(() => {
+                    }).catch((error) => {
+                        console.error("خطأ أثناء فحص رتبة الحساب الحالية:", error);
                         window.location.href = 'index.html';
                     });
             } else {
+                // إذا لم يكن هناك تسجيل دخول بالأساس، يتم التوجيه لصفحة تسجيل الدخول
                 window.location.href = 'index.html';
             }
         });
 
-        // جلب وقراءة قائمة المستخدمين وتصفية المسوقين فقط
-        function loadMarketersData() {
-            database.ref('users').once('value')
-                .then((snapshot) => {
-                    const tbody = document.getElementById('marketersTableBody');
-                    tbody.innerHTML = '';
+        // 3. الدالة الرئيسية لتشغيل لوحة التحكم والمزامنة لايف
+        function initAdminDashboard() {
+            listenToMarketersData();
+            fetchCompaniesCount();
+        }
+
+        /**
+         * دالة مراقبة وجلب قائمة المسوقين وعرضهم في الجدول بشكل ديناميكي (Live Update)
+         */
+        function listenToMarketersData() {
+            const tbody = document.getElementById('marketersTableBody');
+            const totalMarketersCounter = document.getElementById('totalMarketersCount');
+            
+            const usersRef = database.ref('users');
+
+            // الاستماع الحي لأي إضافة أو تعديل في عقدة المستخدمين
+            usersRef.on('value', (snapshot) => {
+                try {
+                    tbody.innerHTML = ''; // تصفية الجدول تماماً لمنع التراكم والتكرار عند التحديث
                     let marketerCount = 0;
 
-                    if(snapshot.exists()) {
+                    if (snapshot.exists()) {
                         snapshot.forEach((childSnapshot) => {
+                            const userId = childSnapshot.key;
                             const user = childSnapshot.val();
-                            if(user.role === 'marketer') {
+
+                            // فلترة الحسابات وعرض من يحمل رتبة مسوق فقط (marketer)
+                            if (user.role === 'marketer') {
                                 marketerCount++;
-                                const tr = document.createElement('tr');
-                                const date = user.created_at ? new Date(user.created_at).toLocaleDateString('ar-EG') : '--';
+
+                                // البيانات الأساسية مع وضع قيم افتراضية آمنة لحمايتها من الـ undefined
+                                const name = user.name || "غير مسجل";
+                                const email = user.email || "لا يوجد إيميل";
+                                const companyId = user.company_id || "1";
                                 
+                                // تحويل وقت السيرفر (Timestamp) إلى تاريخ منسق باللغة العربية
+                                const regDate = user.created_at ? new Date(user.created_at).toLocaleDateString('ar-EG') : '--';
+                                
+                                // سحب مبيعات وأرباح المسوق (أو وضع 0 إذا لم تحدد بعد من الإدارة)
+                                const totalSales = user.total_sales || 0;
+                                const totalProfits = user.total_profits || 0;
+
+                                // إنشاء الصف البرمجي الجديد للمسوق بالجدول
+                                const tr = document.createElement('tr');
                                 tr.innerHTML = `
-                                    <td><strong>${user.name}</strong></td>
-                                    <td>${user.email}</td>
-                                    <td><span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">${user.company_id}</span></td>
-                                    <td>${date}</td>
+                                    <td><strong>${name}</strong></td>
+                                    <td>${email}</td>
+                                    <td><span class="company-badge">${companyId}</span></td>
+                                    <td>${regDate}</td>
+                                    <td><span class="text-primary">${totalSales.toLocaleString('ar-EG')} EGP</span></td>
+                                    <td><span class="text-success">${totalProfits.toLocaleString('ar-EG')} EGP</span></td>
+                                    <td>
+                                        <button class="btn-update" onclick="updateMarketerFinance('${userId}', '${name}', ${totalSales}, ${totalProfits})">
+                                            ⚙️ تحديث الحساب المالي
+                                        </button>
+                                    </td>
                                 `;
                                 tbody.appendChild(tr);
                             }
                         });
-                        document.getElementById('totalMarketers').textContent = marketerCount;
+
+                        // تحديث العداد العلوي الخاص بإجمالي المسوقين الفعليين
+                        totalMarketersCounter.textContent = marketerCount;
+
+                        if (marketerCount === 0) {
+                            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">لم يتم العثور على أي مسوقين مسجلين بالسيستم حالياً.</td></tr>`;
+                        }
                     } else {
-                        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">لا يوجد أي مسوقين مسجلين في النظام بعد.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">قاعدة البيانات فارغة تماماً.</td></tr>`;
+                        totalMarketersCounter.textContent = "0";
                     }
-                }).catch((err) => {
-                    console.error("Error fetching marketers: ", err);
-                });
-                
-            // قراءة عدد الشركات المسجلة بالنظام لعداد الإحصائيات
-            database.ref('companies').once('value').then((snap) => {
-                document.getElementById('totalCompanies').textContent = snap.exists() ? snap.numChildren() : 0;
+                } catch (err) {
+                    console.error("خطأ برميجي داخلي أثناء قراءة داتا المسوقين:", err);
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">حدث خطأ أثناء معالجة البيانات: ${err.message}</td></tr>`;
+                }
+            }, (error) => {
+                console.error("فشل سحب الداتا بسبب صلاحيات الأمان والـ Rules الخاصة بفايربيز:", error);
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">فشل جلب البيانات. يرجى مراجعة الـ Realtime Database Rules.</td></tr>`;
             });
         }
 
-        // تسجيل الخروج الآمن للأدمن
+        /**
+         * دالة التحديث المالي المباشر لمبيعات وأرباح المسوق (أزرار التحكم المطلوبة)
+         */
+        function updateMarketerFinance(userId, marketerName, currentSales, currentProfits) {
+            // 1. طلب إدخال قيمة المبيعات الجديدة (بكام)
+            const salesInput = prompt(`تحديث مبيعات المسوق الحالي (${marketerName}):\nالرجاء إدخال إجمالي المبيعات الجديد بالجنيه:`, currentSales);
+            if (salesInput === null) return; // إلغاء العملية فوراً لو ضغط الأدمن Cancel
+
+            // 2. طلب إدخال قيمة الأرباح الموزعة (أخد كام)
+            const profitsInput = prompt(`تحديث أرباح المسوق الحالي (${marketerName}):\nالرجاء إدخال قيمة الأرباح المدفوعة الجديدة بالجنيه:`, currentProfits);
+            if (profitsInput === null) return; // إلغاء العملية فوراً لو ضغط الأدمن Cancel
+
+            // تحويل المدخلات إلى أرقام عشرية دقيقة ومعالجتها ضد القيم النصية الخاطئة
+            const newSales = parseFloat(salesInput);
+            const newProfits = parseFloat(profitsInput);
+
+            if (isNaN(newSales) || isNaN(newProfits)) {
+                alert("⚠️ خطأ إدخال: يرجى كتابة أرقام صحيحة فقط بدون حروف!");
+                return;
+            }
+
+            // تحديث البيانات وحقنها مباشرة في الفايربيز تحت عقدة المسوق المحددة
+            database.ref(`users/${userId}`).update({
+                total_sales: newSales,
+                total_profits: newProfits
+            })
+            .then(() => {
+                alert(`✅ تم تحديث الحساب المالي للمسوق (${marketerName}) بنجاح لايف!`);
+            })
+            .catch((error) => {
+                console.error("خطأ في تحديث البيانات المالية بفايربيز:", error);
+                alert(`❌ فشل التحديث: ${error.message}`);
+            });
+        }
+
+        /**
+         * دالة جلب وعرض عدد الشركات المسجلة بالنظام لربط الإحصائيات بالكامل
+         */
+        function fetchCompaniesCount() {
+            database.ref('companies').on('value', (snapshot) => {
+                const totalCompaniesContainer = document.getElementById('totalCompanies');
+                if (snapshot.exists()) {
+                    totalCompaniesContainer.textContent = snapshot.numChildren();
+                } else {
+                    totalCompaniesContainer.textContent = "0";
+                }
+            });
+        }
+
+        // 4. تفعيل كود الخروج الآمن (Logout) للأدمن
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            auth.signOut().then(() => { window.location.href = 'index.html'; });
+            if (confirm("هل أنت متأكد من رغبتك في تسجيل الخروج الآمن من نظام BOSS؟")) {
+                auth.signOut()
+                    .then(() => {
+                        window.location.href = 'index.html';
+                    })
+                    .catch((error) => {
+                        alert("حدث خطأ أثناء محاولة تسجيل الخروج: " + error.message);
+                    });
+            }
         });
     </script>
 </body>
