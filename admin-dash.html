@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة الـ BOSS الرئيسية</title>
+    <title>لوحة الـ BOSS الرئيسية - الإدارة العامة</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -22,33 +22,33 @@
         <div class="main-content">
             <div class="header-dash">
                 <h2>إدارة المسوقين والنظام العام</h2>
-                <div style="background: #e0f2fe; color: #0369a1; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 13px;">حساب إداري</div>
+                <div style="background: #e0f2fe; color: #0369a1; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 13px;">حساب إداري بالكامل</div>
             </div>
 
             <div class="card-grid">
                 <div class="card">
-                    <h4>إجمالي الشركات</h4>
-                    <p id="totalCompanies">--</p>
+                    <h4>إجمالي الشركات النشطة</h4>
+                    <p id="totalCompanies">0</p>
                 </div>
                 <div class="card">
-                    <h4>إجمالي المسوقين النشطين</h4>
-                    <p id="totalMarketers">--</p>
+                    <h4>إجمالي المسوقين المسجلين</h4>
+                    <p id="totalMarketers">0</p>
                 </div>
             </div>
 
-            <h3>قائمة حسابات المسوقين المسجلين في السيستم</h3>
+            <h3>قائمة حسابات المسوقين المسجلين حالياً</h3>
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>الاسم</th>
                         <th>البريد الإلكتروني</th>
                         <th>كود الشركة المربوط بها</th>
-                        <th>تاريخ التسجيل</th>
+                        <th>تاريخ التسجيل بالسيستم</th>
                     </tr>
                 </thead>
                 <tbody id="marketersTableBody">
                     <tr>
-                        <td colspan="4" style="text-align: center; color: #94a3b8;">جاري تحميل المسوقين من سيرفر فايربيز...</td>
+                        <td colspan="4" style="text-align: center; color: #94a3b8;">جاري جلب قائمة المسوقين من سيرفر فايربيز...</td>
                     </tr>
                 </tbody>
             </table>
@@ -56,38 +56,42 @@
     </div>
 
     <script>
+        // إعدادات مشروع TrackerPro الحقيقية الخاصة بك
         const firebaseConfig = {
-            apiKey: "AIzaSyYourKeyHere...",
+            apiKey: "AIzaSyAVW3uSGg86xGKxeXJ5PSwAYAPYET3sZQ8",
             authDomain: "trackerpro-d090e.firebaseapp.com",
             databaseURL: "https://trackerpro-d090e-default-rtdb.firebaseio.com",
             projectId: "trackerpro-d090e",
-            storageBucket: "trackerpro-d090e.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:12345:web:12345"
+            storageBucket: "trackerpro-d090e.firebasestorage.app",
+            messagingSenderId: "445130757587",
+            appId: "1:445130757587:web:33618cbd508558ab310b26",
+            measurementId: "G-RJ22T0PWGS"
         };
         
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // حماية لوحة التحكم وحصرها على الأدمن فقط
+        // حماية لوحة تحكم الأدمن لضمان عدم وصول المسوقين العاديين لها
         auth.onAuthStateChanged((user) => {
             if (user) {
                 database.ref('users/' + user.uid).once('value')
                     .then((snapshot) => {
                         if(snapshot.exists() && (snapshot.val().role === 'super_admin' || snapshot.val().role === 'company_admin')) {
-                            // الحساب أدمن، ابدأ بجلب البيانات فوراً
+                            // الصلاحيات صحيحة، ابدأ فوراً بسحب البيانات وعرضها
                             loadMarketersData();
                         } else {
                             window.location.href = 'index.html';
                         }
+                    }).catch(() => {
+                        window.location.href = 'index.html';
                     });
             } else {
                 window.location.href = 'index.html';
             }
         });
 
-        // جلب قائمة المسوقين وعرضها للأدمن برمجياً بالكامل
+        // جلب وقراءة قائمة المستخدمين وتصفية المسوقين فقط
         function loadMarketersData() {
             database.ref('users').once('value')
                 .then((snapshot) => {
@@ -101,7 +105,6 @@
                             if(user.role === 'marketer') {
                                 marketerCount++;
                                 const tr = document.createElement('tr');
-                                
                                 const date = user.created_at ? new Date(user.created_at).toLocaleDateString('ar-EG') : '--';
                                 
                                 tr.innerHTML = `
@@ -115,19 +118,19 @@
                         });
                         document.getElementById('totalMarketers').textContent = marketerCount;
                     } else {
-                        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">لا يوجد مسوقين مسجلين بعد.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">لا يوجد أي مسوقين مسجلين في النظام بعد.</td></tr>`;
                     }
                 }).catch((err) => {
-                    console.error("Error loading data: ", err);
+                    console.error("Error fetching marketers: ", err);
                 });
                 
-            // جلب عدد الشركات التابعة للسيستم
+            // قراءة عدد الشركات المسجلة بالنظام لعداد الإحصائيات
             database.ref('companies').once('value').then((snap) => {
                 document.getElementById('totalCompanies').textContent = snap.exists() ? snap.numChildren() : 0;
             });
         }
 
-        // تسجيل الخروج
+        // تسجيل الخروج الآمن للأدمن
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             auth.signOut().then(() => { window.location.href = 'index.html'; });
