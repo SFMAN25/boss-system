@@ -21,7 +21,7 @@
 
         <div class="main-content">
             <div class="header-dash">
-                <h2 id="welcomeMsg">أهلاً بك يا بطل...</h2>
+                <h2 id="welcomeMsg">أهلاً بك...</h2>
                 <div id="userCompany" style="font-weight: bold; color: #475569;">الشركة: --</div>
             </div>
 
@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <h3>آخر العمليات المسجلة</h3>
+            <h3>آخر العمليات والطلبات المسجلة</h3>
             <table class="data-table">
                 <thead>
                     <tr>
@@ -52,7 +52,7 @@
                 </thead>
                 <tbody id="actionsLogs">
                     <tr>
-                        <td colspan="4" style="text-align: center; color: #94a3b8;">لا توجد عمليات مسجلة حالياً.</td>
+                        <td colspan="4" style="text-align: center; color: #94a3b8;">لا توجد عمليات مسجلة للأن.</td>
                     </tr>
                 </tbody>
             </table>
@@ -60,21 +60,23 @@
     </div>
 
     <script>
+        // إعدادات مشروع TrackerPro الحقيقية الخاصة بك
         const firebaseConfig = {
-            apiKey: "AIzaSyYourKeyHere...",
+            apiKey: "AIzaSyAVW3uSGg86xGKxeXJ5PSwAYAPYET3sZQ8",
             authDomain: "trackerpro-d090e.firebaseapp.com",
             databaseURL: "https://trackerpro-d090e-default-rtdb.firebaseio.com",
             projectId: "trackerpro-d090e",
-            storageBucket: "trackerpro-d090e.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:12345:web:12345"
+            storageBucket: "trackerpro-d090e.firebasestorage.app",
+            messagingSenderId: "445130757587",
+            appId: "1:445130757587:web:33618cbd508558ab310b26",
+            measurementId: "G-RJ22T0PWGS"
         };
         
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // حماية الصفحة: التأكد من تسجيل الدخول ومن رول الحساب
+        // جدار حماية الصفحة للتأكد من هوية المسوق وصلاحياته
         auth.onAuthStateChanged((user) => {
             if (user) {
                 database.ref('users/' + user.uid).once('value')
@@ -82,20 +84,20 @@
                         if(snapshot.exists() && snapshot.val().role === 'marketer') {
                             const data = snapshot.val();
                             document.getElementById('welcomeMsg').textContent = "أهلاً بك، " + data.name;
-                            document.getElementById('userCompany').textContent = "كود الشركة: " + data.company_id;
-                            
-                            // هنا نقدر نسحب إحصائيات المسوق الحقيقية لو متوفرة في العقدة المالية له
+                            document.getElementById('userCompany').textContent = "كود الشركة المربوطة: " + data.company_id;
                         } else {
-                            // لو الحساب أدمن أو غير مصرح له، يتم توجيهه أو تسجيل خروجه لمنع التداخل
+                            // طرد أو تحويل الحساب لو حاول الدخول بدون رول مسوق صحيح
                             window.location.href = 'index.html';
                         }
+                    }).catch(() => {
+                        window.location.href = 'index.html';
                     });
             } else {
                 window.location.href = 'index.html';
             }
         });
 
-        // زر خروج الأمان
+        // تفعيل زر تسجيل الخروج الآمن
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             auth.signOut().then(() => { window.location.href = 'index.html'; });
