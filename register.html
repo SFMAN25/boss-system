@@ -19,7 +19,7 @@
         <form id="registerForm">
             <div class="form-group">
                 <label for="fullName">الاسم بالكامل</label>
-                <input type="text" id="fullName" required placeholder="جون دو">
+                <input type="text" id="fullName" required placeholder="مثال: محمد أحمد">
             </div>
             <div class="form-group">
                 <label for="companyId">كود الشركة المنضم إليها</label>
@@ -41,15 +41,16 @@
     </div>
 
     <script>
-        // إعدادات الفايربيز الموحدة للسيستم
+        // إعدادات مشروع TrackerPro الحقيقية الخاصة بك
         const firebaseConfig = {
-            apiKey: "AIzaSyYourKeyHere...",
+            apiKey: "AIzaSyAVW3uSGg86xGKxeXJ5PSwAYAPYET3sZQ8",
             authDomain: "trackerpro-d090e.firebaseapp.com",
             databaseURL: "https://trackerpro-d090e-default-rtdb.firebaseio.com",
             projectId: "trackerpro-d090e",
-            storageBucket: "trackerpro-d090e.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:12345:web:12345"
+            storageBucket: "trackerpro-d090e.firebasestorage.app",
+            messagingSenderId: "445130757587",
+            appId: "1:445130757587:web:33618cbd508558ab310b26",
+            measurementId: "G-RJ22T0PWGS"
         };
         
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -70,12 +71,12 @@
             errDiv.style.display = 'none';
             succDiv.style.display = 'none';
 
-            // إنشاء المستخدم في الفايربيز
+            // إنشاء المستخدم برمجياً في Firebase Auth
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const uid = userCredential.user.uid;
 
-                    // حفظ بيانات المسوق في العقدة الصحيحة المتوافقة مع الـ JSON Rules الجديدة
+                    // حفظ وحقن بيانات المسوق الإضافية في عقدة الـ Realtime Database المصلحة
                     return database.ref('users/' + uid).set({
                         name: name,
                         email: email,
@@ -85,13 +86,14 @@
                     });
                 })
                 .then(() => {
-                    succDiv.textContent = "تم إنشاء الحساب بنجاح! جاري تحويلك للوحة التحكم...";
+                    succDiv.textContent = "تم إنشاء الحساب وربطه بالداتابيز بنجاح! جاري التوجيه...";
                     succDiv.style.display = 'block';
                     setTimeout(() => {
                         window.location.href = 'user-dash.html';
-                    }, 2000);
+                    }, 1500);
                 })
                 .catch((error) => {
+                    // معالجة الأخطاء وعرضها للمستخدم بشكل واضح
                     errDiv.textContent = error.message;
                     errDiv.style.display = 'block';
                 });
