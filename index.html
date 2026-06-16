@@ -33,25 +33,26 @@
     </div>
 
     <script>
-        // تكوين الفايربيز الخاص بمشروعك (استبدله ببيانات مشروعك TrackerPro)
+        // إعدادات مشروع TrackerPro الحقيقية الخاصة بك
         const firebaseConfig = {
-            apiKey: "AIzaSyYourKeyHere...",
+            apiKey: "AIzaSyAVW3uSGg86xGKxeXJ5PSwAYAPYET3sZQ8",
             authDomain: "trackerpro-d090e.firebaseapp.com",
             databaseURL: "https://trackerpro-d090e-default-rtdb.firebaseio.com",
             projectId: "trackerpro-d090e",
-            storageBucket: "trackerpro-d090e.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:12345:web:12345"
+            storageBucket: "trackerpro-d090e.firebasestorage.app",
+            messagingSenderId: "445130757587",
+            appId: "1:445130757587:web:33618cbd508558ab310b26",
+            measurementId: "G-RJ22T0PWGS"
         };
         
-        // تهيئة الفايربيز
+        // تهيئة فايربيز آمنة تمنع التكرار
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // معالجة إرسال النموذج لقراءة البيانات والتحقق
+        // التحكم في إرسال بيانات الدخول للتحقق
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -63,28 +64,28 @@
             errDiv.style.display = 'none';
             succDiv.style.display = 'none';
 
-            // تسجيل الدخول بالفايربيز
+            // طلب المصادقة من الفايربيز
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const uid = userCredential.user.uid;
-                    succDiv.textContent = "تم التحقق، جاري فحص الصلاحيات...";
+                    succDiv.textContent = "تم التحقق، جاري فحص الرول البرمجي وصلاحياتك...";
                     succDiv.style.display = 'block';
 
-                    // فحص دور المستخدم في قاعدة البيانات المصلحة
+                    // فحص رول المستخدم من عقدة قاعدة البيانات المصلحة
                     database.ref('users/' + uid).once('value')
                         .then((snapshot) => {
                             if (snapshot.exists()) {
                                 const userData = snapshot.val();
                                 const role = userData.role;
 
-                                // التوجيه حسب الرول البرمجي المعتمد
+                                // توجيه ذكي للمستخدم بناءً على رتبته في قاعدة البيانات
                                 if (role === 'super_admin' || role === 'company_admin') {
                                     window.location.href = 'admin-dash.html';
                                 } else {
                                     window.location.href = 'user-dash.html';
                                 }
                             } else {
-                                throw new Error("لم يتم العثور على صلاحيات لهذا الحساب.");
+                                throw new Error("الحساب مسجل في الـ Auth ولكن لم يتم العثور على بيانات الصلاحيات له.");
                             }
                         }).catch((err) => {
                             errDiv.textContent = err.message;
@@ -93,9 +94,9 @@
                         });
                 })
                 .catch((error) => {
-                    // معالجة الأخطاء الشائعة برمجياً
+                    // معالجة مخصصة للأخطاء البرمجية الشائعة
                     if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                        errDiv.textContent = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+                        errDiv.textContent = "خطأ: البريد الإلكتروني أو كلمة المرور غير صحيحة.";
                     } else {
                         errDiv.textContent = error.message;
                     }
